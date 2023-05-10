@@ -15,6 +15,7 @@ public class KeyBindingsHandler {
     public KeyBinding positionNarrationKey;
     public KeyBinding narratorMenuKey;
     public KeyBinding directionNarrationKey;
+    public KeyBinding teleportKey;
 
     public KeyBinding cameraControlsUp;
     public KeyBinding cameraControlsRight;
@@ -323,6 +324,14 @@ public class KeyBindingsHandler {
                 OTHER_GROUP_TRANSLATION_KEY
         );
         KeyMappingRegistry.register(directionNarrationKey);
+
+        teleportKey = new KeyBinding(
+          "minecraft_access.keys.other.teleport",
+          InputUtil.Type.KEYSYM,
+          GLFW.GLFW_KEY_X,
+          OTHER_GROUP_TRANSLATION_KEY
+        );
+        KeyMappingRegistry.register(teleportKey);
     }
 
     /**

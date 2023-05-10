@@ -8,8 +8,14 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
+import net.minecraft.entity.Entity;
+import net.minecraft.network.packet.c2s.play.TeleportConfirmC2SPacket;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 
+import net.minecraft.text.Text;
+import java.util.List;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -122,6 +128,7 @@ public class CameraControls {
         boolean isSouthKeyPressed = MainClass.keyBindingsHandler.isPressed(MainClass.keyBindingsHandler.cameraControlsSouth)
                 || (isDownKeyPressed && isRightAltPressed && !isLeftAltPressed);
         boolean isCenterCameraKeyPressed = MainClass.keyBindingsHandler.isPressed(MainClass.keyBindingsHandler.cameraControlsCenterCamera);
+        boolean isTeleportKeyPressed = MainClass.keyBindingsHandler.isPressed(MainClass.keyBindingsHandler.teleportKey);
 
         if (isNorthKeyPressed) {
             lookNorth();
@@ -165,6 +172,11 @@ public class CameraControls {
 
         if (isCenterCameraKeyPressed) {
             centerCamera(isLeftAltPressed);
+            return true;
+        }
+
+        if (isTeleportKeyPressed) {
+            teleport(isLeftAltPressed);
             return true;
         }
 
@@ -310,5 +322,28 @@ public class CameraControls {
             case "south_east" -> lookSouthEast();
             case "south_west" -> lookSouthWest();
         }
+    }
+
+    /**
+     * Snaps the camera to the closest cardinal direction and centers it.
+     *
+     * @param lookOpposite Whether to snap the opposite cardinal direction or not and centers it.
+     */
+    private void teleport(boolean lookOpposite) {
+        if (minecraftClient.player == null) return;
+        minecraftClient.player.sendMessage(Text.literal("Key 1 was pressed!"), false);
+        boolean result =  minecraftClient.player.teleport(5, 5, 5, true);
+        Iterable<Entity> entities = minecraftClient.world.getEntities();
+
+        if (Objects.nonNull(entities)) {
+          for (Object o : entities) {
+            Entity e = (Entity) o;
+//TODO
+//ServerPlayerEntity
+//							player.networkHandler.requestTeleport(playerPos.getX(), playerPos.getY(), playerPos.getZ(), entity.getYaw(), entity.getPitch());
+
+          }
+        }
+        ServerPlayNetworking.send((ServerPlayerEntity) user, TutorialNetworkingConstants.HIGHLIGHT_PACKET_ID, PacketByteBufs.empty());
     }
 }
